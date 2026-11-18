@@ -14,15 +14,17 @@
 | `Thread` + `sleep` | `sampler/ManualThreadSampler.java` | 작업을 마친 뒤 `Thread.sleep(intervalMs)`. 다음 실행은 "작업 시간 + interval" 뒤 |
 | `ScheduledExecutorService` | `sampler/ScheduledThreadSampler.java` | `scheduleAtFixedRate(task, 0, intervalMs, MILLISECONDS)`. 다음 실행 시각은 시작 시각 기준으로 고정 |
 
-README의 비교 항목 표(정리 전 원문. 2026-11-18에 README의 "예외 처리" 행은 JDK Javadoc에 맞춰 고쳤다 — 아래 한계):
+README의 비교 항목 표("예외 처리" 행의 한 칸은 2026-11-18에 JDK Javadoc에 맞춰 고쳤다 — 표 아래 주석):
 
 | 항목 | Manual Thread + Sleep | ScheduledExecutorService |
 |------|----------------------|--------------------------|
 | 주기 정확도 | 작업 시간만큼 밀림 | 정확한 주기 유지 시도 |
-| 예외 처리 | 스레드가 죽을 수 있음 | 예외 발생해도 계속 실행 |
+| 예외 처리 | 스레드가 죽을 수 있음 | 반복 작업에서 예외가 밖으로 나오면 이후 실행이 멈춘다(JDK Javadoc. 측정 안 함) |
 | 종료 처리 | interrupt + join 필요 | cancel() 한 줄 |
 | 코드 복잡도 | while 루프 직접 관리 | 프레임워크가 관리 |
 | 리소스 관리 | 매번 새 스레드 생성 | 스레드 풀 재사용 |
+
+> 2026-11-18 주석: "예외 처리" 행의 `ScheduledExecutorService` 칸은 원문에서 "예외 발생해도 계속 실행"이었다. JDK `scheduleAtFixedRate` Javadoc은 반복 작업의 실행 중 예외가 밖으로 나오면 이후 실행이 멈춘다고 적으므로 칸을 그렇게 고쳤다. 이 저장소는 예외 동작을 측정하지 않았다.
 
 이 표에서 측정한 것은 "주기 정확도" 행뿐이다. 나머지 행은 측정하지 않은 설명이다(아래 한계).
 
